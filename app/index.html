@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zeotap Email Signature Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-50:#EBF1FF; --blue-100:#D9E5FF; --blue-200:#B3CAFF;
+    --blue:#004BFF; --blue-700:#003ACC; --blue-800:#002C9E;
+    --ink-900:#0B1221; --ink-800:#16203A; --ink-700:#2E3950; --ink-600:#4A5571; --ink-500:#6B7591; --ink-400:#949DB5;
+    --white:#FFFFFF; --surface-2:#F4F7FC; --bg:#F7F9FD; --line:#E5EAF2; --line-strong:#D2DAE8;
+    --navy-900:#060B1A; --navy-800:#0B1430;
+    --lilac:#E7E5F8; --periwinkle:#D9E1F8;
+    --radius-md:10px; --radius-lg:14px; --radius-xl:20px; --radius-2xl:28px; --radius-pill:999px;
+    --shadow-sm:0 1px 3px rgba(11,18,33,.08),0 1px 2px rgba(11,18,33,.04);
+    --shadow-md:0 6px 16px rgba(11,18,33,.08),0 2px 6px rgba(11,18,33,.05);
+    --shadow-lg:0 16px 40px rgba(11,18,33,.12),0 4px 12px rgba(11,18,33,.06);
+    --shadow-blue:0 8px 24px rgba(0,75,255,.24);
+    --ring:0 0 0 3px rgba(0,75,255,.18);
+    --font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink-700);font-family:var(--font);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--blue);text-decoration:none}
+  .container{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* ---------- nav ---------- */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.78);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .nav img{height:26px;width:auto;display:block}
+  .nav-pill{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--ink-600);background:var(--surface-2);border:1px solid var(--line);padding:6px 12px;border-radius:var(--radius-pill)}
+  .nav-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--blue)}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;overflow:hidden;text-align:center;padding:72px 0 150px}
+  .hero::before{content:"";position:absolute;inset:0;z-index:0;background:
+    radial-gradient(620px 320px at 50% -40px, rgba(0,75,255,.14), transparent 70%),
+    radial-gradient(520px 300px at 12% 8%, var(--lilac), transparent 60%),
+    radial-gradient(520px 300px at 88% 0%, var(--periwinkle), transparent 60%)}
+  .hero .container{position:relative;z-index:1}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);background:var(--blue-50);border:1px solid var(--blue-200);padding:6px 14px;border-radius:var(--radius-pill);margin-bottom:22px}
+  .hero h1{font-size:clamp(34px,5vw,52px);line-height:1.06;font-weight:800;letter-spacing:-.025em;color:var(--ink-900);margin:0 auto 18px;max-width:14ch;text-wrap:balance}
+  .hero p{font-size:clamp(16px,2vw,19px);color:var(--ink-600);margin:0 auto;max-width:60ch;text-wrap:balance}
+
+  /* ---------- tool panel (overlaps hero) ---------- */
+  .tool{position:relative;z-index:2;margin-top:-104px;padding-bottom:80px}
+  .panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-2xl);box-shadow:var(--shadow-lg);overflow:hidden}
+  .panel-head{display:flex;align-items:center;gap:12px;padding:20px 28px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff, #fbfcfe)}
+  .panel-head .mark{width:34px;height:34px;border-radius:10px;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-blue)}
+  .panel-head .mark svg{width:18px;height:18px;color:#fff}
+  .panel-head h2{font-size:16px;font-weight:700;color:var(--ink-900);margin:0}
+  .panel-head p{font-size:13px;color:var(--ink-500);margin:1px 0 0}
+  .grid{display:grid;grid-template-columns:minmax(300px,400px) 1fr}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .col{padding:28px}
+  .col-form{border-right:1px solid var(--line)}
+  @media(max-width:860px){.col-form{border-right:none;border-bottom:1px solid var(--line)}}
+  .col-preview{background:var(--surface-2)}
+  .col h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-500);margin:0 0 18px}
+
+  .field{margin-bottom:16px}
+  .field:last-child{margin-bottom:0}
+  label{display:block;font-size:13px;font-weight:600;color:var(--ink-900);margin-bottom:6px}
+  label .opt{font-weight:400;color:var(--ink-400)}
+  input{width:100%;padding:11px 13px;font-size:14px;font-family:var(--font);color:var(--ink-900);background:var(--white);border:1px solid var(--line-strong);border-radius:var(--radius-md);transition:border-color .15s,box-shadow .15s}
+  input::placeholder{color:var(--ink-400)}
+  input:focus{outline:none;border-color:var(--blue);box-shadow:var(--ring)}
+
+  .stage{background:var(--white);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm);padding:28px;min-height:130px;overflow:auto}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  button{appearance:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;border-radius:var(--radius-md);padding:11px 18px;border:1px solid var(--line-strong);background:var(--white);color:var(--ink-900);transition:background .15s,border-color .15s,transform .05s,box-shadow .15s}
+  button:hover{border-color:var(--blue-200);background:#fbfcff}
+  button:active{transform:translateY(1px)}
+  button.primary{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:var(--shadow-blue)}
+  button.primary:hover{background:var(--blue-700);border-color:var(--blue-700)}
+  button.ok{background:#11875A;border-color:#11875A;color:#fff;box-shadow:none}
+
+  .raw{margin-top:14px}
+  details summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-600);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"›";display:inline-block;margin-right:6px;transition:transform .15s}
+  details[open] summary::before{transform:rotate(90deg)}
+  textarea{width:100%;margin-top:10px;height:150px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;color:var(--ink-800);border:1px solid var(--line);border-radius:var(--radius-md);padding:12px;background:#fbfcfe;resize:vertical}
+
+  .note{margin-top:18px;font-size:12.5px;line-height:1.5;color:#7a5f00;background:#FCF3E2;border:1px solid #F0D9A8;border-radius:var(--radius-md);padding:12px 14px}
+  .note b{color:#5f4900}
+  .note code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:rgba(0,0,0,.05);padding:1px 5px;border-radius:4px}
+
+  /* ---------- steps ---------- */
+  .steps{padding:8px 0 80px}
+  .steps h2{font-size:24px;font-weight:800;letter-spacing:-.02em;color:var(--ink-900);text-align:center;margin:0 0 6px}
+  .steps .sub{text-align:center;color:var(--ink-600);margin:0 0 36px}
+  .step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:760px){.step-grid{grid-template-columns:1fr}}
+  .step{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-xl);padding:24px;box-shadow:var(--shadow-sm)}
+  .step .num{width:34px;height:34px;border-radius:10px;background:var(--blue-50);color:var(--blue);border:1px solid var(--blue-200);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;margin-bottom:14px}
+  .step h4{font-size:15px;font-weight:700;color:var(--ink-900);margin:0 0 6px}
+  .step p{font-size:13.5px;color:var(--ink-600);margin:0}
+  .step b{color:var(--ink-800)}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--navy-900);color:#aab4cc;padding:48px 0 40px}
+  .foot-inner{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+  footer img{height:24px;width:auto;filter:brightness(0) invert(1);opacity:.92}
+  footer .tag{font-size:13.5px;color:#8b96b3}
+  footer .fine{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#6b7693}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="https://zeotap.com" aria-label="Zeotap"><img id="navLogo" alt="Zeotap"></a>
+    <span class="nav-pill"><span class="dot"></span> Internal brand tool</span>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="container">
+    <span class="eyebrow">Email signature generator</span>
+    <h1>Your signature, on brand in seconds</h1>
+    <p>Add your details, preview it live, then copy it straight into Gmail or Outlook — or grab the raw HTML. Everything stays in your browser; nothing is saved or sent.</p>
+  </div>
+</header>
+
+<!-- ============ TOOL ============ -->
+<section class="tool">
+  <div class="container">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+        <div>
+          <h2>Build your signature</h2>
+          <p>Fields update the preview as you type.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- form -->
+        <div class="col col-form">
+          <h3>Your details</h3>
+          <div class="field">
+            <label for="name">Full name</label>
+            <input id="name" type="text" autocomplete="name" value="Chris Mackinnon">
+          </div>
+          <div class="field">
+            <label for="title">Job title</label>
+            <input id="title" type="text" autocomplete="organization-title" value="VP Revenue Operations">
+          </div>
+          <div class="field">
+            <label for="mobile">Mobile <span class="opt">— optional</span></label>
+            <input id="mobile" type="tel" autocomplete="tel" value="+34 622 602 587">
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="opt">— optional</span></label>
+            <input id="email" type="email" autocomplete="email" placeholder="firstname.lastname@zeotap.com" value="">
+          </div>
+          <div class="field">
+            <label for="linkedin">LinkedIn profile URL <span class="opt">— optional</span></label>
+            <input id="linkedin" type="url" placeholder="https://www.linkedin.com/in/your-handle" value="https://www.linkedin.com/company/zeotap">
+          </div>
+          <div class="field" style="display:flex;align-items:center;gap:8px;margin-top:22px;">
+            <input id="banner" type="checkbox" style="width:auto;" checked>
+            <label for="banner" style="margin:0;">Include campaign banner</label>
+          </div>
+        </div>
+
+        <!-- preview -->
+        <div class="col col-preview">
+          <h3>Live preview</h3>
+          <div class="stage"><div id="preview"></div></div>
+
+          <div class="actions">
+            <button class="primary" id="copySig">Copy signature</button>
+            <button id="copyHtml">Copy HTML code</button>
+            <button id="download">Download .html</button>
+          </div>
+
+          <div class="raw">
+            <details>
+              <summary>View / edit raw HTML</summary>
+              <textarea id="rawHtml" readonly></textarea>
+            </details>
+          </div>
+
+          <div class="note" id="imgNote"><b>Before company-wide rollout:</b> the logo still uses the live SVG, which won't render in Outlook. Ask IT/brand to host a PNG of the logo and update <code>LOGO_URL</code> at the top of this file. The LinkedIn icon uses a hosted PNG that works everywhere; self-host it via <code>LINKEDIN_ICON_URL</code> if you'd prefer not to rely on a third-party CDN. The campaign banner points at a placeholder <code>BANNER_URL</code> until the GitHub repo and image are live; swap that file in place afterwards to update the banner everywhere at once.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STEPS ============ -->
+<section class="steps">
+  <div class="container">
+    <h2>How to add it</h2>
+    <p class="sub">One copy, then paste it wherever your signature lives.</p>
+    <div class="step-grid">
+      <div class="step">
+        <div class="num">1</div>
+        <h4>Gmail</h4>
+        <p>Settings (gear) → See all settings → General → Signature → Create new, then paste with <b>Copy signature</b>.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h4>Outlook (desktop)</h4>
+        <p>File → Options → Mail → Signatures → New, then paste with <b>Copy signature</b>.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h4>Outlook web / HubSpot</h4>
+        <p>Use <b>Copy HTML code</b> anywhere an HTML signature is accepted.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="foot-inner">
+      <img id="footLogo" alt="Zeotap">
+      <span class="tag">The composable CDP. Easy, secure, and impactful.</span>
+    </div>
+    <div class="fine">Internal tool — for Zeotap employees. Signatures are generated in your browser; no data is stored or transmitted.</div>
+  </div>
+</footer>
+
+<!-- hidden helper for clipboard fallback -->
+<div id="clip" contenteditable="true" style="position:fixed;left:-9999px;top:0;white-space:pre-wrap"></div>
+
+<script>
+/* ============================================================
+   IMAGE SOURCES — the only external dependency.
+   Email clients need an absolute HTTPS *PNG* URL.
+   The logo default below works in the in-browser preview and in
+   Gmail/Apple Mail, but should be swapped for a hosted PNG before
+   production (Outlook won't render SVG; Gmail strips data: images).
+   ============================================================ */
+// TODO(IT): replace with a hosted PNG of the Zeotap logo (~280px wide for retina).
+const LOGO_URL = "https://zeotap.com/wp-content/uploads/2025/06/logo.svg";
+// Hosted PNG LinkedIn icon (renders in Gmail/Outlook). IT can self-host the same
+// glyph and swap this URL if they'd rather not depend on a third-party CDN.
+const LINKEDIN_ICON_URL = "https://img.icons8.com/color/96/linkedin.png";
+
+const COMPANY_URL = "https://zeotap.com";
+const IMPRINT_URL = "https://zeotap.com/imprint/";
+
+/* Campaign banner — swap banner.png in the mackiiops/pubsigzt GitHub repo to
+   update the banner in every signature that includes it, past and future
+   (email clients fetch the image live each time a message is opened).
+   jsDelivr sets a 7-day browser cache-control on the image, so bump
+   BANNER_VERSION every time the file changes — that turns the URL into a
+   "new" resource and forces browsers to fetch the fresh copy instead of
+   serving a week-old cached one. Keep the banner image itself under ~600px
+   wide and a fixed aspect ratio so it doesn't jump around when swapped. */
+const BANNER_VERSION = 2;
+const BANNER_URL = `https://cdn.jsdelivr.net/gh/mackiiops/pubsigzt@main/banner.png?v=${BANNER_VERSION}`;
+const BANNER_LINK_URL = "https://zeotap.com/?page_id=5392&preview=true&event_view=upcoming&event_type=all&event_region=all#upcoming";
+
+/* logos in the page chrome share the same source of truth */
+document.getElementById("navLogo").src = LOGO_URL;
+document.getElementById("footLogo").src = LOGO_URL;
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fields = ["name","title","mobile","email","linkedin"];
+
+function readValues(){
+  const v = {};
+  fields.forEach(f => v[f] = $(f).value.trim());
+  v.banner = $("banner").checked;
+  return v;
+}
+
+/* ---------- build the email-safe signature ---------- */
+function buildSignature(v){
+  const FONT = "font-family:Arial,Helvetica,sans-serif;";
+  const rows = [];
+
+  // 1) Name + LinkedIn icon, vertically centred on one line
+  const nameCell =
+    `<td style="${FONT}font-size:14px;font-weight:bold;color:#0B1221;line-height:18px;vertical-align:middle;">${esc(v.name)||"Your Name"}</td>`;
+  const iconCell = v.linkedin
+    ? `<td style="vertical-align:middle;padding-left:7px;line-height:0;">`
+      + `<a href="${esc(v.linkedin)}" style="text-decoration:none;border:0;">`
+      + `<img src="${LINKEDIN_ICON_URL}" alt="LinkedIn" width="16" height="16" style="display:block;border:0;outline:none;width:16px;height:16px;"></a></td>`
+    : "";
+  rows.push(
+    `<tr><td style="padding:0;">`
+    + `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr>${nameCell}${iconCell}</tr></table>`
+    + `</td></tr>`
+  );
+
+  // 2) Job title
+  if(v.title)
+    rows.push(`<tr><td style="${FONT}font-size:13px;color:#2E3950;padding-top:2px;line-height:18px;">${esc(v.title)}</td></tr>`);
+
+  // spacer
+  rows.push(`<tr><td style="font-size:0;line-height:10px;height:10px;">&nbsp;</td></tr>`);
+
+  // 3) contact lines
+  const line = (label, html) =>
+    `<tr><td style="${FONT}font-size:12px;color:#2E3950;line-height:18px;"><span style="font-weight:bold;color:#0B1221;">${label}:</span> ${html}</td></tr>`;
+  if(v.mobile) rows.push(line("m", esc(v.mobile)));
+  if(v.email)  rows.push(line("e", `<a href="mailto:${esc(v.email)}" style="color:#004BFF;text-decoration:none;">${esc(v.email)}</a>`));
+
+  // spacer
+  rows.push(`<tr><td style="font-size:0;line-height:14px;height:14px;">&nbsp;</td></tr>`);
+
+  // 4) logo
+  rows.push(
+    `<tr><td style="padding:0;"><a href="${COMPANY_URL}" style="text-decoration:none;border:0;">`
+    + `<img src="${LOGO_URL}" alt="Zeotap" width="140" style="display:block;border:0;outline:none;width:140px;height:auto;"></a></td></tr>`
+  );
+
+  // spacer
+  rows.push(`<tr><td style="font-size:0;line-height:14px;height:14px;">&nbsp;</td></tr>`);
+
+  // 4b) campaign banner — sourced live from BANNER_URL, so updating that file
+  // updates the banner in every signature that includes it, retroactively.
+  if(v.banner){
+    rows.push(
+      `<tr><td style="padding:0;"><a href="${esc(BANNER_LINK_URL)}" style="text-decoration:none;border:0;">`
+      + `<img src="${BANNER_URL}" alt="" width="400" style="display:block;border:0;outline:none;width:100%;max-width:400px;height:auto;"></a></td></tr>`
+    );
+    rows.push(`<tr><td style="font-size:0;line-height:14px;height:14px;">&nbsp;</td></tr>`);
+  }
+
+  // 5) legal disclaimer + Imprint (British spelling, no unsubscribe)
+  const disclaimer =
+    `*DISCLAIMER &ndash; This email message and any attachments to it are confidential and intended solely for the addressee(s). `
+    + `If you are not the intended recipient, please delete the message and notify the sender immediately. `
+    + `Also, you are notified that any unauthorised disclosure, use, copying, or storage of this message or its attachments is strictly prohibited. `
+    + `View <a href="${IMPRINT_URL}" style="color:#004BFF;text-decoration:underline;">Imprint</a>.`;
+  rows.push(
+    `<tr><td style="${FONT}border-top:1px solid #E2E8F0;padding-top:8px;font-size:9px;line-height:13px;color:#8A93A6;">${disclaimer}</td></tr>`
+  );
+
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;${FONT}color:#2E3950;max-width:560px;">`
+    + rows.join("") + `</table>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  const html = buildSignature(readValues());
+  $("preview").innerHTML = html;
+  $("rawHtml").value = html;
+  return html;
+}
+
+/* ---------- clipboard ---------- */
+async function copyRich(){
+  const html = render();
+  const plain = $("preview").innerText;
+  try{
+    await navigator.clipboard.write([new ClipboardItem({
+      "text/html": new Blob([html], {type:"text/html"}),
+      "text/plain": new Blob([plain], {type:"text/plain"})
+    })]);
+    return true;
+  }catch(e){
+    const clip = $("clip");
+    clip.innerHTML = html;
+    const r = document.createRange(); r.selectNodeContents(clip);
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    const ok = document.execCommand("copy");
+    sel.removeAllRanges();
+    return ok;
+  }
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(e){
+    const t = document.createElement("textarea");
+    t.value = text; t.style.position="fixed"; t.style.left="-9999px";
+    document.body.appendChild(t); t.select();
+    const ok = document.execCommand("copy"); document.body.removeChild(t);
+    return ok;
+  }
+}
+function flash(btn, msg){
+  const old = btn.textContent, cls = btn.className;
+  btn.textContent = msg; btn.classList.add("ok");
+  setTimeout(()=>{ btn.textContent = old; btn.className = cls; }, 1600);
+}
+
+/* ---------- wire up ---------- */
+fields.forEach(f => $(f).addEventListener("input", render));
+$("banner").addEventListener("change", render);
+$("copySig").addEventListener("click", async e => flash(e.target, (await copyRich()) ? "Copied ✓" : "Press Ctrl/Cmd+C"));
+$("copyHtml").addEventListener("click", async e => flash(e.target, (await copyText(render())) ? "Copied ✓" : "Copy failed"));
+$("download").addEventListener("click", () => {
+  const v = readValues();
+  const file = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(v.name)||"signature"}</title></head><body>${render()}</body></html>`;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([file], {type:"text/html"}));
+  a.download = ((v.name||"signature").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"signature") + "-signature.html";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+});
+
+render();
+</script>
+</body>
+</html>
