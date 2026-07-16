@@ -190,7 +190,7 @@
             </details>
           </div>
 
-          <div class="note" id="imgNote"><b>Before company-wide rollout:</b> the logo still uses the live SVG, which won't render in Outlook. Ask IT/brand to host a PNG of the logo and update <code>LOGO_URL</code> at the top of this file. The LinkedIn icon uses a hosted PNG that works everywhere; self-host it via <code>LINKEDIN_ICON_URL</code> if you'd prefer not to rely on a third-party CDN. The campaign banner points at a placeholder <code>BANNER_URL</code> until the GitHub repo and image are live; swap that file in place afterwards to update the banner everywhere at once.</div>
+          <div class="note" id="imgNote">The logo, LinkedIn icon, and campaign banner are all hosted PNGs, so they render everywhere including Outlook. Self-host the LinkedIn icon via <code>LINKEDIN_ICON_URL</code> if you'd prefer not to rely on a third-party CDN.</div>
         </div>
       </div>
     </div>
@@ -244,8 +244,7 @@
    Gmail/Apple Mail, but should be swapped for a hosted PNG before
    production (Outlook won't render SVG; Gmail strips data: images).
    ============================================================ */
-// TODO(IT): replace with a hosted PNG of the Zeotap logo (~280px wide for retina).
-const LOGO_URL = "https://zeotap.com/wp-content/uploads/2025/06/logo.svg";
+const LOGO_URL = "https://cdn.jsdelivr.net/gh/mackiiops/pubsigzt@main/logo.png";
 // Hosted PNG LinkedIn icon (renders in Gmail/Outlook). IT can self-host the same
 // glyph and swap this URL if they'd rather not depend on a third-party CDN.
 const LINKEDIN_ICON_URL = "https://img.icons8.com/color/96/linkedin.png";

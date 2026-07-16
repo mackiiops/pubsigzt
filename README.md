@@ -3,7 +3,8 @@
 Two things live in this repo:
 
 1. **`banner.png`** — the campaign banner image used in the Zeotap email signature tool. It's served publicly via jsDelivr and referenced by URL from the signature generator, so replacing this file updates the banner everywhere the signature is used (subject to the caching notes below).
-2. **`app/`** — the source for the signature generator web app, deployed to Google Cloud Run.
+2. **`logo.png`** — the Zeotap wordmark used in the signature (sourced from the `zeotap-design` brand skill's assets, brand blue on transparent). Referenced the same way as the banner, via `LOGO_URL`.
+3. **`app/`** — the source for the signature generator web app, deployed to Google Cloud Run.
 
 Live app: **https://signature-generator-1016745695114.europe-west1.run.app**
 
@@ -59,4 +60,3 @@ This project uses `CLOUDSDK_PYTHON` pinned to Python 3.11 for `gcloud` — if yo
 ## Known limitations
 
 - **Gmail signature caching** — see above. There's no automatic fix for this without pushing signature updates directly via the Gmail API with Google Workspace domain-wide delegation (a bigger, separate project requiring Workspace admin sign-off). For now this is accepted as manual: Gmail users occasionally need to re-save their signature to pick up a new banner.
-- The Zeotap logo in the signature still uses a live SVG (`LOGO_URL` in `app/index.html`), which won't render in Outlook. Swap for a hosted PNG before a full company-wide push.
