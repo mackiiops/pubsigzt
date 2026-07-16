@@ -28,13 +28,21 @@ const BANNER_LINK_URL = "https://zeotap.com/...";
 
 1. Replace `banner.png` in this repo with the new image (same filename, ideally the same ~600×220px-or-narrower aspect ratio so it doesn't resize awkwardly in people's signatures).
 2. Commit and push.
-3. **Bump `BANNER_VERSION` by 1** in `app/index.html` (find the `const BANNER_VERSION = N;` line near the top of the `<script>` block). This is required — jsDelivr sets a 7-day browser cache-control on the image, so without a version bump, anyone who already loaded the signature generator (or an email with the banner) keeps seeing the *old* image for up to a week even after the file changes on GitHub.
-4. Redeploy to Cloud Run (see below).
-5. Optionally force jsDelivr's edge cache to drop the old file immediately:
+3. **Purge jsDelivr's edge cache — this step is required, not optional:**
    ```
    curl https://purge.jsdelivr.net/gh/mackiiops/pubsigzt@main/banner.png
    ```
+   jsDelivr caches by repo+path and **ignores query strings**, so it will keep serving the old file for up to 12 hours after your push otherwise. (`BANNER_VERSION`/`?v=` only helps bust *browser* caching once jsDelivr itself is serving the new file — it does nothing for jsDelivr's own cache.)
+4. **Bump `BANNER_VERSION` by 1** in `app/index.html` (find the `const BANNER_VERSION = N;` line near the top of the `<script>` block). This forces browsers that already loaded an older version to fetch fresh instead of using their own 7-day cached copy.
+5. Redeploy to Cloud Run (see below).
 6. To change where the banner links to, edit `BANNER_LINK_URL` in the same file.
+
+Verify a swap actually landed by comparing hashes before assuming it worked:
+```
+md5 banner.png                                                        # local/source
+curl -s https://raw.githubusercontent.com/mackiiops/pubsigzt/main/banner.png | md5   # GitHub
+curl -s https://cdn.jsdelivr.net/gh/mackiiops/pubsigzt@main/banner.png | md5         # jsDelivr (what the app actually uses)
+```
 
 ## How to redeploy the app
 
